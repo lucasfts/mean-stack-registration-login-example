@@ -9,11 +9,21 @@
         var service = {};
 
         service.Create = Create;
+        service.GetAll = GetAll;
+        service.Delete = Delete;
 
         return service;
 
         function Create(question) {
             return $http.post('/api/questions', question).then(handleSuccess, handleError);
+        }
+
+        function Delete(_id) {
+            return $http.delete('/api/questions/' + _id).then(handleSuccess, handleError);
+        }
+
+        function GetAll() {
+            return $http.get('/api/questions').then(handleSuccess, handleError);
         }
 
         // private functions

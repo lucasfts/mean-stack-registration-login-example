@@ -10,6 +10,9 @@ db.bind('questions');
 var service = {};
 
 service.create = create;
+service.getAll = getAll;
+service.delete = _delete;
+
 
 module.exports = service;
 
@@ -19,24 +22,7 @@ function create(questionParam) {
 
     createQuestion(questionParam);
 
-    // validation
-    // db.questions.findOne(
-    //     { title: questionParam.title },
-    //     function (err, question) {
-    //         if (err) deferred.reject(err.name + ': ' + err.message);
-
-            
-    //         createQuestion(questionParam);
-            
-    //     });
-
     function createQuestion(question) {
-        // set user object to userParam without the cleartext password
-        // var user = _.omit(userParam, 'password');
-
-        // add hashed password to user object
-        // user.hash = bcrypt.hashSync(userParam.password, 10);
-
         db.questions.insert(
             question,
             function (err, doc) {
@@ -45,6 +31,39 @@ function create(questionParam) {
                 deferred.resolve();
             });
     }
+
+    return deferred.promise;
+}
+
+function _delete(_id) {
+    var deferred = Q.defer();
+
+    db.questions.remove(
+        { _id: mongo.helper.toObjectID(_id) },
+        function (err) {
+            if (err) deferred.reject(err.name + ': ' + err.message);
+
+            deferred.resolve();
+        });
+
+    return deferred.promise;
+}
+
+function getAll() {
+    var deferred = Q.defer();
+
+    db.questions.find().toArray(function (err, questions) {
+        if (err) deferred.reject(err.name + ': ' + err.message);
+
+        if (questions) {
+            // return user (without hashed password)
+        //    return questions;
+        deferred.resolve(questions);
+        } else {
+            // user not found
+            deferred.resolve();
+        }
+    });
 
     return deferred.promise;
 }
